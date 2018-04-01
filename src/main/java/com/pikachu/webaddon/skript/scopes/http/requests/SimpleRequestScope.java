@@ -1,0 +1,47 @@
+package com.pikachu.webaddon.skript.scopes.http.requests;
+
+import ch.njol.skript.Skript;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SkriptParser;
+import ch.njol.util.Kleenean;
+import com.pikachu.webaddon.util.Util;
+import org.bukkit.event.Event;
+
+public abstract class SimpleRequestScope extends RequestScope {
+
+	public static void register(Class<? extends SimpleRequestScope> clazz, String type) {
+		RequestScope.register(clazz, type + " <.+>");
+	}
+
+	private String path;
+	private boolean started;
+
+	@Override
+	public final boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
+		if (parseResult.regexes.size() == 0) {
+			throw new UnsupportedOperationException("A SimpleRequestScope must have at least one regex!");
+		}
+		path = Util.parsePath(parseResult.regexes.get(0).group());
+		return path != null;
+	}
+
+	@Override
+	public final void execute(Event e) {
+		if (!started) {
+			start(e);
+			started = true;
+		}
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public abstract void start(Event e);
+
+	@Override
+	public final String toString(Event e, boolean debug) {
+		return getInScript();
+	}
+
+}

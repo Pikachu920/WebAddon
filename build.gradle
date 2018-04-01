@@ -1,0 +1,55 @@
+group 'com.pikachu.webaddon'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+
+    mavenCentral()
+
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
+
+    maven {
+        url 'https://raw.githubusercontent.com/bensku/mvn-repo/master/'
+    }
+
+    maven {
+        url 'https://repo.destroystokyo.com/repository/maven-public/'
+    }
+
+    maven {
+        url 'http://maven.sk89q.com/repo'
+    }
+
+    maven {
+        url 'http://nexus.hc.to/content/repositories/pub_releases'
+    }
+
+    maven {
+        url 'https://jitpack.io'
+    }
+
+}
+
+configurations {
+    spark
+}
+
+dependencies {
+    compile 'org.spigotmc:spigot-api:1.12.1-R0.1-SNAPSHOT'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'ch.njol:skript:2.2-dev33'
+    spark group: 'com.sparkjava', name: 'spark-core', version: '2.7.2'
+    configurations.compile.extendsFrom(configurations.spark)
+}
+
+jar {
+    from {
+        configurations.spark.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

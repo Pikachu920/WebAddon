@@ -17,11 +17,11 @@ public class ExprBody extends SimplePropertyExpression<Object, String> {
 	}
 
 	@Override
-	public String convert(Object request) {
-		if (request instanceof Request) {
-			return ((Request) request).body();
+	public String convert(Object o) {
+		if (o instanceof Request) {
+			return ((Request) o).body();
 		}
-		return ((Response) request).body();
+		return ((Response) o).body();
 	}
 
 	@Override

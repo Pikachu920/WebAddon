@@ -33,7 +33,7 @@ public abstract class SimpleRequestScope extends RequestScope {
 		}
 	}
 
-	public String getPath() {
+	public final String getPath() {
 		return path;
 	}
 

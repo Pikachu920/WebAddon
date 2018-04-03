@@ -5,6 +5,7 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.lang.Condition;
+import ch.njol.skript.lang.Conditional;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SelfRegisteringSkriptEvent;
 import ch.njol.skript.lang.SkriptParser;
@@ -56,8 +57,6 @@ public class ScopeHTTPServer extends EventScope {
     private String stringRep;
     private int port;
     private List<SectionNode> rawNodes = new ArrayList<>();
-    private static Condition cond;
-    private List<TriggerSection> triggers = new ArrayList<>();
     private Service server;
 
     @Override
@@ -72,14 +71,14 @@ public class ScopeHTTPServer extends EventScope {
             return false;
         }
         if (stringRep.startsWith("on")) {
-            Skript.error("You can't use 'on' with a web server!");
+            Skript.error("You may not use 'on' with a web server!");
             return false;
         }
 
         for (Node node : sectionNode) {
             Util.setKey(node, ScriptLoader.replaceOptions(node.getKey()));
             if (!(node instanceof SectionNode)) {
-                Skript.error("A web server can only contain request scopes");
+                Skript.error("A web server may only contain request scopes");
                 return false;
             }
             if (RequestScope.getPatterns().stream().noneMatch(p -> node.getKey().matches(p))) {
@@ -102,9 +101,9 @@ public class ScopeHTTPServer extends EventScope {
                 scope.setTrigger(trigger);
                 scope.setServer(server);
                 scope.check(null);
-                triggers.add(trigger);
             }
         }
+        rawNodes.clear();
     }
 
     @Override

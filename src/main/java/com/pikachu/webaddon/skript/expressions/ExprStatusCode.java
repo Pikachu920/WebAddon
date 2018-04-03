@@ -3,13 +3,12 @@ package com.pikachu.webaddon.skript.expressions;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import org.bukkit.event.Event;
-import spark.Request;
 import spark.Response;
 
-public class ExprResponseCode extends SimplePropertyExpression<Response, Integer> {
+public class ExprStatusCode extends SimplePropertyExpression<Response, Integer> {
 
 	static {
-		register(ExprResponseCode.class, Integer.class, "[(status|response)] code[s]", "responses");
+		register(ExprStatusCode.class, Integer.class, "[(status|response)] code[s]", "responses");
 	}
 
 	@Override

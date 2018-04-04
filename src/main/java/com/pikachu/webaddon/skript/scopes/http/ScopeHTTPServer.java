@@ -65,7 +65,7 @@ public class ScopeHTTPServer extends EventScope {
         stringRep = sectionNode.getKey();
         String stringPort = parseResult.regexes.get(0).group();
         if (stringPort.matches("\\d{1,5}")) {
-            port = Integer.parseInt(parseResult.regexes.get(0).group());
+            port = Integer.parseInt(stringPort);
         } else {
             Skript.error("'" + stringPort + "' is not a valid port");
             return false;

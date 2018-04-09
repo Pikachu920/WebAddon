@@ -168,7 +168,12 @@ public class Util {
                             error = "A path may only contain variables";
                             return null;
                         }
-                        VariableString name = getVariableName((Variable<?>) expr);
+                        Variable variable = (Variable<?>) expr;
+                        if (!variable.isLocal()) {
+                            error = "Path variable must be local";
+                            return null;
+                        }
+                        VariableString name = getVariableName(variable);
                         if (!name.isSimple()) {
                             error = "A path variable may not contain expressions";
                             return null;

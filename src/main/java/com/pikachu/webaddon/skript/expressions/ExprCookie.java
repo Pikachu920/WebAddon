@@ -3,7 +3,6 @@ package com.pikachu.webaddon.skript.expressions;
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.expressions.base.PropertyExpression;
-import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.util.SimpleExpression;
@@ -12,34 +11,32 @@ import org.bukkit.event.Event;
 import spark.Request;
 import spark.Response;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class ExprHeader extends SimpleExpression<String> {
+public class ExprCookie extends SimpleExpression<String> {
 
 	static {
-		PropertyExpression.register(ExprHeader.class, String.class, "header %string%", "requests/responses");
+		PropertyExpression.register(ExprCookie.class, String.class, "cookie %string%", "requests/responses");
 	}
 
-	private Expression<String> header;
+	private Expression<String> cookie;
 	private Expression<Object> web;
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
-			web = (Expression<Object>) (matchedPattern == 1 ? exprs[0] : exprs[1]);
-			header = (Expression<String>) (matchedPattern == 1 ? exprs[1] : exprs[0]);
-			return true;
+		web = (Expression<Object>) (matchedPattern == 1 ? exprs[0] : exprs[1]);
+		cookie = (Expression<String>) (matchedPattern == 1 ? exprs[1] : exprs[0]);
+		return true;
 	}
 
 	@Override
 	protected String[] get(Event e) {
-		String header = this.header.getSingle(e);
-		return header == null ? new String[0] :
+		String cookie = this.cookie.getSingle(e);
+		return cookie == null ? new String[0] :
 				Arrays.stream(web.getArray(e))
-					.map(o -> o instanceof Request ?
-							((Request) o).headers(header) : ((Response) o).raw().getHeader(header))
-					.toArray(String[]::new);
+						.filter(Request.class::isInstance)
+						.map(o -> ((Request) o).cookie(cookie))
+						.toArray(String[]::new);
 	}
 
 	@Override
@@ -51,7 +48,7 @@ public class ExprHeader extends SimpleExpression<String> {
 	public Class<?>[] acceptChange(Changer.ChangeMode mode) {
 		Class returnType = web.getReturnType();
 		if (returnType != Response.class && returnType != Object.class) {
-			Skript.error("Only response headers may be changed");
+			Skript.error("Only response cookies may be changed");
 			return null;
 		}
 		if (mode == Changer.ChangeMode.SET ||
@@ -63,18 +60,18 @@ public class ExprHeader extends SimpleExpression<String> {
 
 	@Override
 	public void change(Event e, Object[] delta, Changer.ChangeMode mode) {
-		String header = this.header.getSingle(e);
-		if (header != null) {
+		String cookie = this.cookie.getSingle(e);
+		if (cookie != null) {
 			Arrays.stream(web.getArray(e))
 					.filter(Response.class::isInstance)
 					.map(o -> (Response) o)
 					.forEach(response -> {
 						switch (mode) {
 							case SET:
-								response.raw().setHeader(header, (String) delta[0]);
+								response.cookie(cookie, (String) delta[0]);
 								break;
 							case DELETE:
-								response.raw().setHeader(header, null);
+								response.raw().setHeader(cookie, null);
 						}
 					});
 		}
@@ -82,7 +79,7 @@ public class ExprHeader extends SimpleExpression<String> {
 
 	@Override
 	public String toString(Event e, boolean debug) {
-		return "header " + header.toString(e, debug) + " of " + web.toString(e, debug);
+		return "cookie " + cookie.toString(e, debug) + " of " + web.toString(e, debug);
 	}
 
 	@Override

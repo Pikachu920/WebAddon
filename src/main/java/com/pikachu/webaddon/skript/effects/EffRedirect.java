@@ -11,7 +11,7 @@ import spark.Response;
 public class EffRedirect extends Effect {
 
 	static {
-		Skript.registerEffect(EffRedirect.class, "redirect %responses% to %string% [with [the] (response|status) code %number%]");
+		Skript.registerEffect(EffRedirect.class, "redirect [%responses%] to %string% [with [the] (response|status) code %number%]");
 	}
 
 	private Expression<Response> responses;

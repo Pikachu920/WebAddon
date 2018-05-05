@@ -18,8 +18,8 @@ public abstract class SimpleRequestScope extends RequestScope {
 
 	@Override
 	public final boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
-		if (parseResult.regexes.size() == 0) {
-			throw new UnsupportedOperationException("A SimpleRequestScope must have at least one regex!");
+		if (parseResult.regexes.size() != 1) {
+			throw new UnsupportedOperationException("A " + getClass().getSimpleName() + " must have only one regex!");
 		}
 		path = Util.parsePath(parseResult.regexes.get(0).group());
 		return path != null;

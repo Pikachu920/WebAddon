@@ -16,6 +16,7 @@ import ch.njol.skript.log.SkriptLogger;
 import ch.njol.skript.util.StringMode;
 import ch.njol.util.Kleenean;
 import com.pikachu.webaddon.util.scope.EffectSection;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 
 import java.lang.reflect.Field;
@@ -148,15 +149,7 @@ public class Util {
     }
 
     public static String parsePath(String path) {
-        return parsePath(path, true);
-    }
-
-    public static String parsePath(String path, boolean printErrors) {
-        String error = null;
         VariableString varString = VariableString.newInstance(path, StringMode.MESSAGE);
-        if (varString == null) {
-            return null;
-        }
         if (!varString.isSimple()) {
             RetainingLogHandler errors = SkriptLogger.startRetainingLog();
             try {
@@ -165,17 +158,17 @@ public class Util {
                     if (!(data[i] instanceof String)) {
                         Expression<?> expr = ReflectionUtils.getField(data[i].getClass(), data[i], "expr");
                         if (!(expr instanceof Variable<?>)) {
-                            error = "A path may only contain variables";
+                            Skript.error("A path may only contain variables");
                             return null;
                         }
                         Variable variable = (Variable<?>) expr;
                         if (!variable.isLocal()) {
-                            error = "Path variable must be local";
+                            Skript.error("Path variable must be local");
                             return null;
                         }
                         VariableString name = getVariableName(variable);
                         if (!name.isSimple()) {
-                            error = "A path variable may not contain expressions";
+                            Skript.error("A path variable may not contain expressions");
                             return null;
                         }
                         data[i] = ":" + name.toString(null);
@@ -184,13 +177,14 @@ public class Util {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } finally {
-                errors.stop();
-                if (printErrors && error != null) {
-                    Skript.error(error);
-                }
+                EffectSection.stopLog(errors);
             }
         }
         return varString.toString(null);
     }
+
+    public static boolean runningReqn() {
+    	return Bukkit.getServer().getPluginManager().getPlugin("Reqn") != null;
+	}
 
 }

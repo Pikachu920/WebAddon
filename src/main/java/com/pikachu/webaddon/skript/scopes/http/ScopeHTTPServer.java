@@ -5,34 +5,30 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.lang.Condition;
-import ch.njol.skript.lang.Conditional;
 import ch.njol.skript.lang.Literal;
-import ch.njol.skript.lang.SelfRegisteringSkriptEvent;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.Trigger;
-import ch.njol.skript.lang.TriggerItem;
 import ch.njol.skript.lang.TriggerSection;
 import ch.njol.skript.log.SkriptLogger;
 import ch.njol.skript.registrations.EventValues;
 import ch.njol.skript.util.Getter;
-import ch.njol.skript.variables.Variables;
 import com.pikachu.webaddon.bukkit.events.HTTPRequestEvent;
 import com.pikachu.webaddon.bukkit.events.StubBukkitEvent;
 import com.pikachu.webaddon.skript.scopes.http.requests.RequestScope;
 import com.pikachu.webaddon.util.Util;
-import com.pikachu.webaddon.util.scope.EffectSection;
 import com.pikachu.webaddon.util.scope.EventScope;
 import org.bukkit.event.Event;
 import spark.Request;
 import spark.Response;
 import spark.Service;
-import spark.servlet.SparkApplication;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
 public class ScopeHTTPServer extends EventScope {
+
+	private static boolean parsing;
 
     static {
         Skript.registerEvent("web server", ScopeHTTPServer.class, StubBukkitEvent.class,
@@ -51,7 +47,6 @@ public class ScopeHTTPServer extends EventScope {
                 return arg.getResponse();
             }
         }, 0);
-
     }
 
     private String stringRep;
@@ -61,6 +56,7 @@ public class ScopeHTTPServer extends EventScope {
 
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, SkriptParser.ParseResult parseResult) {
+		parsing = true;
         SectionNode sectionNode = (SectionNode) SkriptLogger.getNode();
         stringRep = sectionNode.getKey();
         String stringPort = parseResult.regexes.get(0).group();
@@ -68,10 +64,12 @@ public class ScopeHTTPServer extends EventScope {
             port = Integer.parseInt(stringPort);
         } else {
             Skript.error("'" + stringPort + "' is not a valid port");
+			parsing = false;
             return false;
         }
         if (stringRep.startsWith("on")) {
             Skript.error("You may not use 'on' with a web server!");
+			parsing = false;
             return false;
         }
 
@@ -79,15 +77,18 @@ public class ScopeHTTPServer extends EventScope {
             Util.setKey(node, ScriptLoader.replaceOptions(node.getKey()));
             if (!(node instanceof SectionNode)) {
                 Skript.error("A web server may only contain request scopes");
+				parsing = false;
                 return false;
             }
             if (RequestScope.getPatterns().stream().noneMatch(p -> node.getKey().matches(p))) {
                 Skript.error("'" + node.getKey() + "' is not a request scope (e.g. 'get /index:')");
+				parsing = false;
                 return false;
             }
             rawNodes.add((SectionNode) node);
         }
         Util.clearSectionNode(sectionNode);
+		parsing = false;
         return true;
     }
 
@@ -108,6 +109,8 @@ public class ScopeHTTPServer extends EventScope {
 
     @Override
     public void unregister(Trigger t) {
+		// workaround for spark npe
+		server.get("workaroundForSparkNpe" + UUID.randomUUID().toString(), (req, resp) -> "you shouldn't be seeing this");
         server.stop();
     }
 

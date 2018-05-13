@@ -6,7 +6,7 @@ import spark.Response;
 
 public class Classinfos {
 
-	public static void register() {
+	static {
 		new SimpleType<Request>(Request.class, "request", "requests?") {
 			@Override
 			public Request parse(String arg0, ParseContext arg1) {

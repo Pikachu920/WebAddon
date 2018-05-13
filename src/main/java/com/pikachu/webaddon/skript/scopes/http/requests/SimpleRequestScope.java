@@ -1,6 +1,5 @@
 package com.pikachu.webaddon.skript.scopes.http.requests;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
@@ -18,6 +17,9 @@ public abstract class SimpleRequestScope extends RequestScope {
 
 	@Override
 	public final boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
+		if (!hasSection()) {
+			return false;
+		}
 		if (parseResult.regexes.size() != 1) {
 			throw new UnsupportedOperationException("A " + getClass().getSimpleName() + " must have only one regex!");
 		}

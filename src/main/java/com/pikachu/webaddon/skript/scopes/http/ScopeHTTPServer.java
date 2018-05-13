@@ -110,12 +110,13 @@ public class ScopeHTTPServer extends EventScope {
     @Override
     public void unregister(Trigger t) {
 		// workaround for spark npe
-		server.get("workaroundForSparkNpe" + UUID.randomUUID().toString(), (req, resp) -> "you shouldn't be seeing this");
+		server.options("workaroundForSparkNpe" + UUID.randomUUID().toString(), (req, resp) -> "you shouldn't be seeing this");
         server.stop();
     }
 
     @Override
     public void unregisterAll() {
+		unregister(null);
     }
 
     @Override

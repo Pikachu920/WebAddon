@@ -221,8 +221,8 @@ public abstract class EffectSection extends Condition {
      *
      * @return True if the EffectSection was used as condition in if/else if
      */
-    public boolean checkIfCondition() {
-        if (hasIfOrElseIf)
+	public boolean checkIfCondition(boolean error) {
+		if (hasIfOrElseIf && error)
             Skript.error("You can't use the effect in if/else if section.");
         return hasIfOrElseIf;
     }

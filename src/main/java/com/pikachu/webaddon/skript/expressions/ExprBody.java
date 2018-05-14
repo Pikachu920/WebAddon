@@ -3,6 +3,7 @@ package com.pikachu.webaddon.skript.expressions;
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import org.bukkit.event.Event;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 @Description("The body of a request/response. Note that for large bodies, " +
 		"you may want to compute them via the compute effect as large bodies (e.g. images) " +
 		"could crash your server.")
+@Examples("broadcast body of event-request")
 public class ExprBody extends SimplePropertyExpression<Object, String> {
 
 	static {

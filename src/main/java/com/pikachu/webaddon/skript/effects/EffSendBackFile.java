@@ -10,21 +10,25 @@ import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
 import spark.Response;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
-public class EffSendBack extends Effect {
+public class EffSendBackFile extends Effect {
 
 	static {
-		Skript.registerEffect(EffSendBack.class, "send back %string%", "send %string% back");
+		Skript.registerEffect(EffSendBackFile.class, "send back file %string%");
 	}
 
-	private Expression<String> response;
+	private Expression<String> file;
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int i, Kleenean kleenean, SkriptParser.ParseResult parseResult) {
 		if (ScriptLoader.getCurrentEvents() != null && Arrays.stream(ScriptLoader.getCurrentEvents())
 				.anyMatch(event -> EventValues.getEventValueGetter(event, Response.class, 0) != null)) {
-			response = (Expression<String>) exprs[0];
+			file = (Expression<String>) exprs[0];
 			return true;
 		}
 		Skript.error("You may only use 'send back' in events with a response");
@@ -34,15 +38,22 @@ public class EffSendBack extends Effect {
 	@Override
 	protected void execute(Event e) {
 		Response response = EventValues.getEventValue(e, Response.class, 0);
-		String body = this.response.getSingle(e);
-		if (response != null && body != null) {
-			response.body(body);
+		String file = this.file.getSingle(e);
+		if (response != null && file != null) {
+			try {
+				byte[] fileData = Files.readAllBytes(Paths.get(file));
+				HttpServletResponse raw = response.raw();
+				raw.getOutputStream().write(fileData);
+				raw.getOutputStream().flush();
+				raw.getOutputStream().close();
+			} catch (IOException ignored) {
+			}
 		}
 	}
 
 	@Override
 	public String toString(Event e, boolean debug) {
-		return "send back " + response.toString(e, debug);
+		return "send back file" + file.toString(e, debug);
 	}
 
 }

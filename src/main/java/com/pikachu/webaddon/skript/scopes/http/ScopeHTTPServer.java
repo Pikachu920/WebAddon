@@ -23,12 +23,15 @@ import spark.Response;
 import spark.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class ScopeHTTPServer extends EventScope {
 
 	private static boolean parsing;
+	private static Set<Integer> usedPorts = new HashSet<>();
 
     static {
         Skript.registerEvent("web server", ScopeHTTPServer.class, StubBukkitEvent.class,
@@ -56,20 +59,21 @@ public class ScopeHTTPServer extends EventScope {
 
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, SkriptParser.ParseResult parseResult) {
-		parsing = true;
         SectionNode sectionNode = (SectionNode) SkriptLogger.getNode();
         stringRep = sectionNode.getKey();
         String stringPort = parseResult.regexes.get(0).group();
         if (stringPort.matches("\\d{1,5}")) {
             port = Integer.parseInt(stringPort);
+			if (usedPorts.contains(port)) {
+				Skript.error("There is already a web server running on port " + port);
+				return false;
+			}
         } else {
             Skript.error("'" + stringPort + "' is not a valid port");
-			parsing = false;
             return false;
         }
         if (stringRep.startsWith("on")) {
             Skript.error("You may not use 'on' with a web server!");
-			parsing = false;
             return false;
         }
 
@@ -77,23 +81,25 @@ public class ScopeHTTPServer extends EventScope {
             Util.setKey(node, ScriptLoader.replaceOptions(node.getKey()));
             if (!(node instanceof SectionNode)) {
                 Skript.error("A web server may only contain request scopes");
-				parsing = false;
                 return false;
             }
             if (RequestScope.getPatterns().stream().noneMatch(p -> node.getKey().matches(p))) {
                 Skript.error("'" + node.getKey() + "' is not a request scope (e.g. 'get /index:')");
-				parsing = false;
                 return false;
             }
             rawNodes.add((SectionNode) node);
         }
+		if (rawNodes.isEmpty()) {
+			Skript.error("A web server without any routes is useless");
+			return false;
+		}
         Util.clearSectionNode(sectionNode);
-		parsing = false;
         return true;
     }
 
     @Override
     public void load() {
+		usedPorts.add(port);
         server = Service.ignite().port(port);
         for (SectionNode node : rawNodes) {
             RequestScope scope = (RequestScope) Condition.parse(node.getKey(), "Can't understand this scope: '" + node.getKey() + "'");
@@ -112,6 +118,7 @@ public class ScopeHTTPServer extends EventScope {
 		// workaround for spark npe
 		server.options("workaroundForSparkNpe" + UUID.randomUUID().toString(), (req, resp) -> "you shouldn't be seeing this");
         server.stop();
+		usedPorts.remove(port);
     }
 
     @Override

@@ -37,6 +37,7 @@ public abstract class EffectSection extends Condition {
     private TriggerSection trigger = null;
     private boolean hasIfOrElseIf = false;
     private boolean executeNext = true;
+	private boolean hasSection;
     private String asInScript;
 
     public EffectSection() {
@@ -45,6 +46,7 @@ public abstract class EffectSection extends Condition {
         Node n = SkriptLogger.getNode(); //Skript sets the node before parsing this 'effect'
         if (n == null || !(n instanceof SectionNode)) //Check in case it wasn't loaded as inline condition
             return;
+		hasSection = true;
         asInScript = n.getKey();
         //True if it was used as condition
         hasIfOrElseIf = StringUtils.startsWithIgnoreCase(n.getKey(), "if ") || StringUtils.startsWithIgnoreCase(n.getKey(), "else if ");
@@ -176,7 +178,7 @@ public abstract class EffectSection extends Condition {
      * @return True if it has
      */
     public boolean hasSection() {
-        return section != null || trigger != null;
+		return hasSection;
     }
 
     /**

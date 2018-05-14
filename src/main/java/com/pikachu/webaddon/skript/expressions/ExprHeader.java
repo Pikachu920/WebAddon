@@ -3,7 +3,6 @@ package com.pikachu.webaddon.skript.expressions;
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.expressions.base.PropertyExpression;
-import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.util.SimpleExpression;
@@ -12,9 +11,7 @@ import org.bukkit.event.Event;
 import spark.Request;
 import spark.Response;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class ExprHeader extends SimpleExpression<String> {
 
@@ -27,9 +24,9 @@ public class ExprHeader extends SimpleExpression<String> {
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
-			web = (Expression<Object>) (matchedPattern == 1 ? exprs[0] : exprs[1]);
-			header = (Expression<String>) (matchedPattern == 1 ? exprs[1] : exprs[0]);
-			return true;
+		web = (Expression<Object>) exprs[matchedPattern ^ 1];
+		header = (Expression<String>) exprs[matchedPattern];
+		return true;
 	}
 
 	@Override
@@ -37,9 +34,9 @@ public class ExprHeader extends SimpleExpression<String> {
 		String header = this.header.getSingle(e);
 		return header == null ? new String[0] :
 				Arrays.stream(web.getArray(e))
-					.map(o -> o instanceof Request ?
-							((Request) o).headers(header) : ((Response) o).raw().getHeader(header))
-					.toArray(String[]::new);
+						.map(o -> o instanceof Request ?
+								((Request) o).headers(header) : ((Response) o).raw().getHeader(header))
+						.toArray(String[]::new);
 	}
 
 	@Override
@@ -56,7 +53,7 @@ public class ExprHeader extends SimpleExpression<String> {
 		}
 		if (mode == Changer.ChangeMode.SET ||
 				mode == Changer.ChangeMode.DELETE) {
-			return new Class<?>[]{ String.class };
+			return new Class<?>[]{String.class};
 		}
 		return null;
 	}

@@ -30,105 +30,115 @@ import java.util.UUID;
 
 public class ScopeHTTPServer extends EventScope {
 
-	private static boolean parsing;
+	private static boolean parsingRoute;
 	private static Set<Integer> usedPorts = new HashSet<>();
 
-    static {
-        Skript.registerEvent("web server", ScopeHTTPServer.class, StubBukkitEvent.class,
-                "[open a] (web|http) server on port <.+>");
+	static {
+		Skript.registerEvent("web server", ScopeHTTPServer.class, StubBukkitEvent.class,
+				"[open a] (web|http) server on port <.+>");
 
-        EventValues.registerEventValue(HTTPRequestEvent.class, Request.class, new Getter<Request, HTTPRequestEvent>() {
-            @Override
-            public Request get(HTTPRequestEvent arg) {
-                return arg.getRequest();
-            }
-        }, 0);
+		EventValues.registerEventValue(HTTPRequestEvent.class, Request.class, new Getter<Request, HTTPRequestEvent>() {
+			@Override
+			public Request get(HTTPRequestEvent arg) {
+				return arg.getRequest();
+			}
+		}, 0);
 
-        EventValues.registerEventValue(HTTPRequestEvent.class, Response.class, new Getter<Response, HTTPRequestEvent>() {
-            @Override
-            public Response get(HTTPRequestEvent arg) {
-                return arg.getResponse();
-            }
-        }, 0);
-    }
+		EventValues.registerEventValue(HTTPRequestEvent.class, Response.class, new Getter<Response, HTTPRequestEvent>() {
+			@Override
+			public Response get(HTTPRequestEvent arg) {
+				return arg.getResponse();
+			}
+		}, 0);
+	}
 
-    private String stringRep;
-    private int port;
-    private List<SectionNode> rawNodes = new ArrayList<>();
-    private Service server;
+	private String stringRep;
+	private int port;
+	private List<SectionNode> rawNodes = new ArrayList<>();
+	private Service server;
 
-    @Override
-    public boolean init(Literal<?>[] args, int matchedPattern, SkriptParser.ParseResult parseResult) {
-        SectionNode sectionNode = (SectionNode) SkriptLogger.getNode();
-        stringRep = sectionNode.getKey();
-        String stringPort = parseResult.regexes.get(0).group();
-        if (stringPort.matches("\\d{1,5}")) {
-            port = Integer.parseInt(stringPort);
+	public static boolean isParsingRoute() {
+		return parsingRoute;
+	}
+
+	@Override
+	public boolean init(Literal<?>[] args, int matchedPattern, SkriptParser.ParseResult parseResult) {
+		SectionNode sectionNode = (SectionNode) SkriptLogger.getNode();
+		stringRep = sectionNode.getKey();
+		String stringPort = parseResult.regexes.get(0).group();
+		if (stringPort.matches("\\d{1,5}")) {
+			port = Integer.parseInt(stringPort);
 			if (usedPorts.contains(port)) {
 				Skript.error("There is already a web server running on port " + port);
 				return false;
 			}
-        } else {
-            Skript.error("'" + stringPort + "' is not a valid port");
-            return false;
-        }
-        if (stringRep.startsWith("on")) {
-            Skript.error("You may not use 'on' with a web server!");
-            return false;
-        }
+		} else {
+			Skript.error("'" + stringPort + "' is not a valid port");
+			return false;
+		}
+		if (stringRep.startsWith("on")) {
+			Skript.error("You may not use 'on' with a web server!");
+			return false;
+		}
 
-        for (Node node : sectionNode) {
-            Util.setKey(node, ScriptLoader.replaceOptions(node.getKey()));
-            if (!(node instanceof SectionNode)) {
-                Skript.error("A web server may only contain request scopes");
-                return false;
-            }
-            if (RequestScope.getPatterns().stream().noneMatch(p -> node.getKey().matches(p))) {
-                Skript.error("'" + node.getKey() + "' is not a request scope (e.g. 'get /index:')");
-                return false;
-            }
-            rawNodes.add((SectionNode) node);
-        }
+		for (Node node : sectionNode) {
+			Util.setKey(node, ScriptLoader.replaceOptions(node.getKey()));
+			if (!(node instanceof SectionNode)) {
+				Skript.error("A web server may only contain request scopes");
+				return false;
+			}
+			if (RequestScope.getPatterns().stream().noneMatch(p -> node.getKey().matches(p))) {
+				Skript.error("'" + node.getKey() + "' is not a request scope (e.g. 'get /index:')");
+				return false;
+			}
+			rawNodes.add((SectionNode) node);
+		}
 		if (rawNodes.isEmpty()) {
 			Skript.error("A web server without any routes is useless");
 			return false;
 		}
-        Util.clearSectionNode(sectionNode);
-        return true;
-    }
+		Util.clearSectionNode(sectionNode);
+		return true;
+	}
 
-    @Override
-    public void load() {
+	@Override
+	public void load() {
 		usedPorts.add(port);
-        server = Service.ignite().port(port);
-        for (SectionNode node : rawNodes) {
-            RequestScope scope = (RequestScope) Condition.parse(node.getKey(), "Can't understand this scope: '" + node.getKey() + "'");
-            if (scope != null) {
-                TriggerSection trigger = Util.loadSectionNode(node, node.getKey(), true, "http event", HTTPRequestEvent.class);
-                scope.setTrigger(trigger);
-                scope.setServer(server);
-                scope.check(null);
-            }
-        }
-        rawNodes.clear();
-    }
+		server = Service.ignite().port(port);
+		for (SectionNode node : rawNodes) {
+			RequestScope scope;
+			try {
+				parsingRoute = true;
+				scope = (RequestScope) Condition.parse(node.getKey(), "Can't understand this scope: '" + node.getKey() + "'");
+			} finally {
+				parsingRoute = false;
+			}
+			if (scope != null) {
+				TriggerSection trigger = Util.loadSectionNode(node, node.getKey(), true, "http event", HTTPRequestEvent.class);
+				scope.setTrigger(trigger);
+				scope.setServer(server);
+				scope.check(null);
+			}
+		}
+		rawNodes.clear();
+	}
 
-    @Override
-    public void unregister(Trigger t) {
+	@Override
+	public void unregister(Trigger t) {
 		// workaround for spark npe
 		server.options("workaroundForSparkNpe" + UUID.randomUUID().toString(), (req, resp) -> "you shouldn't be seeing this");
-        server.stop();
+		server.stop();
 		usedPorts.remove(port);
-    }
+	}
 
-    @Override
-    public void unregisterAll() {
+	@Override
+	public void unregisterAll() {
 		unregister(null);
-    }
+	}
 
-    @Override
-    public String toString(Event e, boolean debug) {
-        return stringRep;
-    }
+	@Override
+	public String toString(Event e, boolean debug) {
+		return stringRep;
+	}
 
 }

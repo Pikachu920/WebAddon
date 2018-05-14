@@ -24,7 +24,7 @@ public class ExprStatusCode extends SimplePropertyExpression<Response, Integer> 
 	@Override
 	public Class<?>[] acceptChange(Changer.ChangeMode mode) {
 		if (mode == Changer.ChangeMode.SET) {
-			return new Class[] { Number.class }; // Integer causes weirdness in skript
+			return new Class[]{Number.class}; // Integer causes weirdness in skript
 		}
 		return null;
 	}

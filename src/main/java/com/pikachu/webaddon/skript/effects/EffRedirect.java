@@ -11,7 +11,7 @@ import spark.Response;
 public class EffRedirect extends Effect {
 
 	static {
-		Skript.registerEffect(EffRedirect.class, "redirect [%responses%] to %string% [with [the] (response|status) code %number%]");
+		Skript.registerEffect(EffRedirect.class, "redirect [%responses%] to %string% [with [the] (response|status) code %-number%]");
 	}
 
 	private Expression<Response> responses;
@@ -31,7 +31,7 @@ public class EffRedirect extends Effect {
 	protected void execute(Event e) {
 		String url = this.url.getSingle(e);
 		if (url != null) {
-			for (Response response : responses.getAll(e)) {
+			for (Response response : responses.getArray(e)) {
 				if (status != null) {
 					Number status = this.status.getSingle(e);
 					if (status != null) {
@@ -46,7 +46,7 @@ public class EffRedirect extends Effect {
 
 	@Override
 	public String toString(Event e, boolean debug) {
-		return "redirect " + responses.toString(e, debug) + " to " + url.toString(e, debug) + (status == null ? "" : " with the status code "  +status.toString(e, debug));
+		return "redirect " + responses.toString(e, debug) + " to " + url.toString(e, debug) + (status == null ? "" : " with the status code " + status.toString(e, debug));
 	}
 
 }

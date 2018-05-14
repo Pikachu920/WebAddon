@@ -9,19 +9,19 @@ import org.bukkit.event.HandlerList;
  */
 public final class StubBukkitEvent extends Event {
 
-    private static HandlerList handlerList = new HandlerList();
+	private static HandlerList handlerList = new HandlerList();
 
-    public static HandlerList getHandlerList() {
-        return handlerList;
-    }
+	private StubBukkitEvent() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("This class cannot be instantiated");
+	}
 
-    @Override
-    public HandlerList getHandlers() {
-        return handlerList;
-    }
+	public static HandlerList getHandlerList() {
+		return handlerList;
+	}
 
-    private StubBukkitEvent() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("This class cannot be instantiated");
-    }
+	@Override
+	public HandlerList getHandlers() {
+		return handlerList;
+	}
 
 }

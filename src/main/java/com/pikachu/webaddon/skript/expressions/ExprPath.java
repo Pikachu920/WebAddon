@@ -1,7 +1,6 @@
 package com.pikachu.webaddon.skript.expressions;
 
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
-import ch.njol.skript.lang.util.SimpleExpression;
 import spark.Request;
 
 public class ExprPath extends SimplePropertyExpression<Request, String> {

@@ -3,7 +3,6 @@ package com.pikachu.webaddon.skript.expressions;
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
-import com.pikachu.webaddon.skript.scopes.http.requests.RequestScope;
 import org.bukkit.event.Event;
 import spark.Request;
 import spark.Response;
@@ -39,7 +38,7 @@ public class ExprBody extends SimplePropertyExpression<Object, String> {
 		if (mode == Changer.ChangeMode.SET ||
 				mode == Changer.ChangeMode.ADD ||
 				mode == Changer.ChangeMode.DELETE) {
-			return new Class<?>[]{ String.class };
+			return new Class<?>[]{String.class};
 		}
 		return null;
 	}
@@ -47,23 +46,23 @@ public class ExprBody extends SimplePropertyExpression<Object, String> {
 	@Override
 	public void change(Event e, Object[] delta, Changer.ChangeMode mode) {
 		Arrays.stream(getExpr().getArray(e))
-			.filter(Response.class::isInstance)
-			.map(o -> (Response) o)
-			.forEach(response -> {
-				switch (mode) {
-					case ADD:
-						if (response.body() == null)
+				.filter(Response.class::isInstance)
+				.map(Response.class::cast)
+				.forEach(response -> {
+					switch (mode) {
+						case ADD:
+							if (response.body() == null)
+								response.body((String) delta[0]);
+							else
+								response.body(response.body() + delta[0]);
+							break;
+						case SET:
 							response.body((String) delta[0]);
-						else
-							response.body(response.body() + delta[0]);
-						break;
-					case SET:
-						response.body((String) delta[0]);
-						break;
-					case DELETE:
-						response.body(null);
-				}
-			});
+							break;
+						case DELETE:
+							response.body(null);
+					}
+				});
 	}
 
 	@Override

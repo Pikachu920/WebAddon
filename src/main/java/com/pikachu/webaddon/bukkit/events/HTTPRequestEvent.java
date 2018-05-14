@@ -7,30 +7,29 @@ import spark.Response;
 
 public class HTTPRequestEvent extends Event {
 
-    private static HandlerList handlerList = new HandlerList();
+	private static HandlerList handlerList = new HandlerList();
+	private Request request;
+	private Response response;
 
-    public static HandlerList getHandlerList() {
-        return handlerList;
-    }
+	public HTTPRequestEvent(Request request, Response response) {
+		this.request = request;
+		this.response = response;
+	}
 
-    @Override
-    public HandlerList getHandlers() {
-        return null;
-    }
+	public static HandlerList getHandlerList() {
+		return handlerList;
+	}
 
-    private Request request;
-    private Response response;
+	@Override
+	public HandlerList getHandlers() {
+		return null;
+	}
 
-    public HTTPRequestEvent(Request request, Response response) {
-        this.request = request;
-        this.response = response;
-    }
+	public Request getRequest() {
+		return request;
+	}
 
-    public Request getRequest() {
-        return request;
-    }
-
-    public Response getResponse() {
-        return response;
-    }
+	public Response getResponse() {
+		return response;
+	}
 }

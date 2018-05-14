@@ -24,8 +24,8 @@ public class ExprCookie extends SimpleExpression<String> {
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
-		web = (Expression<Object>) (matchedPattern == 1 ? exprs[0] : exprs[1]);
-		cookie = (Expression<String>) (matchedPattern == 1 ? exprs[1] : exprs[0]);
+		web = (Expression<Object>) exprs[matchedPattern ^ 1];
+		cookie = (Expression<String>) exprs[matchedPattern];
 		return true;
 	}
 
@@ -53,7 +53,7 @@ public class ExprCookie extends SimpleExpression<String> {
 		}
 		if (mode == Changer.ChangeMode.SET ||
 				mode == Changer.ChangeMode.DELETE) {
-			return new Class<?>[]{ String.class };
+			return new Class<?>[]{String.class};
 		}
 		return null;
 	}

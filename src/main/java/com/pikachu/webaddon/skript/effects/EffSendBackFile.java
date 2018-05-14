@@ -2,6 +2,9 @@ package com.pikachu.webaddon.skript.effects;
 
 import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -16,6 +19,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+@Name("Send File")
+@Description("Sends a file (e.g. an image)")
+@Examples({"open a web server on port 8080:",
+		"\tget /images/%{_image}%:",
+		"\t\tsend back file \"website/images/%{_image}%\""
+})
 public class EffSendBackFile extends Effect {
 
 	static {

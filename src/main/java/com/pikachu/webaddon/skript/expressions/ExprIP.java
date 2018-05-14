@@ -1,8 +1,14 @@
 package com.pikachu.webaddon.skript.expressions;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import spark.Request;
 
+@Name("IP address")
+@Description("The IP address of a request")
+@Examples("send back \"Woah bro! Your IP address is %ip of event-request%\"")
 public class ExprIP extends SimplePropertyExpression<Request, String> {
 
 	static {

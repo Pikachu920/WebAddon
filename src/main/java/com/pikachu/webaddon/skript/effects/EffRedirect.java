@@ -1,6 +1,9 @@
 package com.pikachu.webaddon.skript.effects;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -8,6 +11,9 @@ import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
 import spark.Response;
 
+@Name("Redirect")
+@Description("Redirects a browser to another place")
+@Examples("redirect event-response to \"https://www.google.com\"")
 public class EffRedirect extends Effect {
 
 	static {

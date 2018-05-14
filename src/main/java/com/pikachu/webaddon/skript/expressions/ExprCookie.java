@@ -2,6 +2,9 @@ package com.pikachu.webaddon.skript.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.expressions.base.PropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -13,6 +16,9 @@ import spark.Response;
 
 import java.util.Arrays;
 
+@Name("Cookie")
+@Description("The value of a request/response's cookie")
+@Examples("set cookie \"chocolateChip\" of event-response to \"true\"")
 public class ExprCookie extends SimpleExpression<String> {
 
 	static {

@@ -4,6 +4,9 @@ import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptParser;
@@ -21,6 +24,7 @@ import org.bukkit.event.Event;
 import spark.Request;
 import spark.Response;
 import spark.Service;
+import spark.Session;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,6 +32,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@Name("HTTP Server")
+@Description("Opens a HTTP server on the given port")
+@Examples({"open a web server on port 8080:",
+		"\tget /: # navigating to 'localhost:8080' will show you 'hello world'",
+		"\t\tsend back \"hello world!\""
+})
 public class ScopeHTTPServer extends EventScope {
 
 	private static boolean parsingRoute;
@@ -39,15 +49,22 @@ public class ScopeHTTPServer extends EventScope {
 
 		EventValues.registerEventValue(HTTPRequestEvent.class, Request.class, new Getter<Request, HTTPRequestEvent>() {
 			@Override
-			public Request get(HTTPRequestEvent arg) {
-				return arg.getRequest();
+			public Request get(HTTPRequestEvent e) {
+				return e.getRequest();
 			}
 		}, 0);
 
 		EventValues.registerEventValue(HTTPRequestEvent.class, Response.class, new Getter<Response, HTTPRequestEvent>() {
 			@Override
-			public Response get(HTTPRequestEvent arg) {
-				return arg.getResponse();
+			public Response get(HTTPRequestEvent e) {
+				return e.getResponse();
+			}
+		}, 0);
+
+		EventValues.registerEventValue(HTTPRequestEvent.class, Session.class, new Getter<Session, HTTPRequestEvent>() {
+			@Override
+			public Session get(HTTPRequestEvent e) {
+				return e.getRequest().session(true);
 			}
 		}, 0);
 	}

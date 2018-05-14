@@ -1,5 +1,8 @@
 package com.pikachu.webaddon.skript.expressions;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.expressions.base.PropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -12,6 +15,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Name("Splat Parameters")
+@Description("The \"splat\" parameters (e.g. if you had scope 'get /user/*:' the splat parameter" +
+		"would be the text represented by the *.")
+@Examples("set {_l::*} to splat parameters")
 public class ExprSplatParams extends SimpleExpression<String> {
 
 	static {

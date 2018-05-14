@@ -2,6 +2,9 @@ package com.pikachu.webaddon.skript.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.expressions.base.PropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -13,6 +16,11 @@ import spark.Response;
 
 import java.util.Arrays;
 
+@Name("Header")
+@Description("A request/response's header")
+@Examples({"set header \"Content-Type\" of event-response to \"text/css\"",
+		"broadcast header \"Referrer\" of event-request"
+})
 public class ExprHeader extends SimpleExpression<String> {
 
 	static {

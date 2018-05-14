@@ -1,14 +1,20 @@
 package com.pikachu.webaddon.skript.expressions;
 
 import ch.njol.skript.classes.Changer;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import org.bukkit.event.Event;
 import spark.Response;
 
+@Name("Status Code")
+@Description("The status code of a response (e.g. 404)")
+@Examples("set status code of event-response to 404")
 public class ExprStatusCode extends SimplePropertyExpression<Response, Integer> {
 
 	static {
-		register(ExprStatusCode.class, Integer.class, "[(status|response)] code[s]", "responses");
+		register(ExprStatusCode.class, Integer.class, "status code[s]", "responses");
 	}
 
 	@Override

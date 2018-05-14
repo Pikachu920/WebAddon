@@ -2,6 +2,9 @@ package com.pikachu.webaddon.skript.effects;
 
 import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -12,6 +15,12 @@ import spark.Response;
 
 import java.util.Arrays;
 
+@Name("Send Back Text")
+@Description("Send some text back to the browser")
+@Examples({"open a web server on port 8080:",
+		"\tget /: # navigating to 'localhost:8080' will show you 'hello world'",
+		"\t\tsend back \"hello world!\""
+})
 public class EffSendBack extends Effect {
 
 	static {

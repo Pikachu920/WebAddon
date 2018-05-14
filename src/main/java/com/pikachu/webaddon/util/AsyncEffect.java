@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class AsyncEffect extends DelayFork {
 
-	private static final ReentrantLock SKRIPT_EXECUTION = new ReentrantLock(true);
+	private static final ReentrantLock SCRIPT_EXECUTION = new ReentrantLock(true);
 	private static final ExecutorService THREADS = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 	@Override
@@ -25,22 +25,18 @@ public abstract class AsyncEffect extends DelayFork {
 	protected TriggerItem walk(Event e) {
 		debug(e, true);
 		DelayFork.addDelayedEvent(e);
-		CompletableFuture<Void> run = CompletableFuture.runAsync(new Runnable() {
-			public void run() {
-				execute(e);
-			}
-		}, THREADS);
+		CompletableFuture<Void> run = CompletableFuture.runAsync(() -> execute(e), THREADS);
 		run.whenComplete((r, err) -> {
 			if (err != null) {
 				err.printStackTrace();
 			}
-			SKRIPT_EXECUTION.lock();
+			SCRIPT_EXECUTION.lock();
 			try {
 				if (getNext() != null) {
 					walk(getNext(), e);
 				}
 			} finally {
-				SKRIPT_EXECUTION.unlock();
+				SCRIPT_EXECUTION.unlock();
 			}
 		});
 		return null;

@@ -34,8 +34,7 @@ public abstract class ConvertibleSimpleExpression<T> implements Expression<T> {
 	@SuppressWarnings("null")
 	protected ConvertibleSimpleExpression() {
 	}
-
-	// TODO return a kleenean (UNKNOWN if 'all' is null or empty)
+	
 	public final static <T> boolean check(final @Nullable T[] all, final Checker<? super T> c, final boolean invert, final boolean and) {
 		if (all == null)
 			return false;

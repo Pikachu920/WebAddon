@@ -16,7 +16,6 @@ import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import ch.njol.util.coll.iterator.ArrayIterator;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
@@ -28,14 +27,13 @@ public abstract class ConvertibleSimpleExpression<T> implements Expression<T> {
 	 */
 	protected ParserInstance pi;
 	private int time = 0;
-	@Nullable
 	private ClassInfo<?> returnTypeInfo;
 
 	@SuppressWarnings("null")
 	protected ConvertibleSimpleExpression() {
 	}
 	
-	public final static <T> boolean check(final @Nullable T[] all, final Checker<? super T> c, final boolean invert, final boolean and) {
+	public final static <T> boolean check(final T[] all, final Checker<? super T> c, final boolean invert, final boolean and) {
 		if (all == null)
 			return false;
 		boolean hasElement = false;
@@ -55,7 +53,6 @@ public abstract class ConvertibleSimpleExpression<T> implements Expression<T> {
 	}
 
 	@Override
-	@Nullable
 	public final T getSingle(final Event e) {
 		final T[] all = getArray(e);
 		if (all.length == 0)
@@ -148,7 +145,6 @@ public abstract class ConvertibleSimpleExpression<T> implements Expression<T> {
 	 * @param e The event
 	 * @return An array of values for this event. May not contain nulls.
 	 */
-	@Nullable
 	protected abstract T[] get(Event e);
 
 	@Override
@@ -172,7 +168,6 @@ public abstract class ConvertibleSimpleExpression<T> implements Expression<T> {
 	 * @see ConvertedExpression#newInstance(Expression, Class...)
 	 * @see Converter
 	 */
-	@Nullable
 	protected <R> ConvertedExpression<T, ? extends R> getConvertedExpr(final Class<R>... to) {
 		assert !CollectionUtils.containsSuperclass(to, getReturnType());
 		return ConvertedExpression.newInstance(this, to);
@@ -180,7 +175,6 @@ public abstract class ConvertibleSimpleExpression<T> implements Expression<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	@Nullable
 	public <R> Expression<? extends R> getConvertedExpression(final Class<R>... to) {
 		if (CollectionUtils.containsSuperclass(to, getReturnType()))
 			return (Expression<? extends R>) this;
@@ -188,7 +182,6 @@ public abstract class ConvertibleSimpleExpression<T> implements Expression<T> {
 	}
 
 	@Override
-	@Nullable
 	public Class<?>[] acceptChange(final Changer.ChangeMode mode) {
 		ClassInfo<?> rti = returnTypeInfo;
 		if (rti == null)
@@ -201,7 +194,7 @@ public abstract class ConvertibleSimpleExpression<T> implements Expression<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void change(final Event e, final @Nullable Object[] delta, final Changer.ChangeMode mode) {
+	public void change(final Event e, final Object[] delta, final Changer.ChangeMode mode) {
 		final ClassInfo<?> rti = returnTypeInfo;
 		if (rti == null)
 			throw new UnsupportedOperationException();
@@ -277,7 +270,6 @@ public abstract class ConvertibleSimpleExpression<T> implements Expression<T> {
 	}
 
 	@Override
-	@Nullable
 	public Iterator<? extends T> iterator(final Event e) {
 		return new ArrayIterator<T>(getArray(e));
 	}

@@ -1,15 +1,16 @@
 package com.pikachu.webaddon.skript.expressions;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
+
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.expressions.base.PropertyExpression;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 
 @Name("File Contents")
 @Description("The contents of a file")
@@ -22,9 +23,10 @@ public class ExprFileContents extends SimplePropertyExpression<String, String> {
 	}
 
 	@Override
-	public String convert(String s) {
+	public String convert(String path) {
 		try {
-			return FileUtils.readFileToString(new File(s), (Charset) null);
+			return Files.lines(Paths.get(path), StandardCharsets.UTF_8)
+					.collect(Collectors.joining("\n"));
 		} catch (IOException e) {
 			return null;
 		}

@@ -1,6 +1,6 @@
 name: WebAddon
 description: HTTP server functionality for Skript
 main: com.pikachu.webaddon.WebAddon
-version: 1.0
+version: 1.0.0
 author: sky_high
 depend: [Skript]

@@ -3,7 +3,6 @@ package com.pikachu.webaddon.util;
 import ch.njol.skript.lang.TriggerItem;
 import org.bukkit.event.Event;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +20,6 @@ public abstract class AsyncEffect extends DelayFork {
 	private static final ExecutorService THREADS = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 	@Override
-	@Nullable
 	protected TriggerItem walk(Event e) {
 		debug(e, true);
 		DelayFork.addDelayedEvent(e);

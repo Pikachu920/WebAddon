@@ -1,10 +1,10 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '2.0.3'
+    id 'com.github.johnrengelman.shadow' version '4.0.2'
     id 'java'
 }
 
 group 'com.pikachu.webaddon'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 sourceCompatibility = 1.8
 
@@ -13,41 +13,17 @@ repositories {
     mavenCentral()
 
     maven {
-        name = 'spigotmc-repo'
-        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+        url 'https://hub.spigotmc.org/nexus/content/groups/public/'
     }
 
     maven {
-        url 'https://raw.githubusercontent.com/bensku/mvn-repo/master/'
+        url 'https://jitpack.io/'
     }
-
-    maven {
-        url 'https://repo.destroystokyo.com/repository/maven-public/'
-    }
-
-    maven {
-        url 'http://maven.sk89q.com/repo'
-    }
-
-    maven {
-        url 'http://nexus.hc.to/content/repositories/pub_releases'
-    }
-
-    maven {
-        url 'https://jitpack.io'
-    }
-
 }
 
 
 dependencies {
-    compileOnly('org.spigotmc:spigot-api:1.12.1-R0.1-SNAPSHOT')
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compileOnly 'ch.njol:skript:2.2-dev33'
-    compile('com.sparkjava:spark-core:2.7.2')
-}
-
-
-shadowJar {
-    dependencies
+    shadow 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
+    compileOnly 'com.github.SkriptLang:Skript:2.3.6'
+    implementation 'com.sparkjava:spark-core:2.9.0'
 }

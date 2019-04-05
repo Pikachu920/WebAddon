@@ -10,7 +10,6 @@ import ch.njol.skript.localization.Language;
 import ch.njol.skript.registrations.Classes;
 import com.pikachu.webaddon.util.ReflectionUtils;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -46,17 +45,17 @@ public abstract class SimpleType<T> extends ClassInfo<T> implements Changer<T> {
 		register();
 	}
 
-	public abstract String toString(T arg0, int arg1);
+	public abstract String toString(T type, int flags);
 
-	public String toVariableNameString(T arg0) {
-		return toString(arg0, 0);
+	public String toVariableNameString(T type) {
+		return toString(type, 0);
 	}
 
-	public T parse(String arg0, ParseContext arg1) {
+	public T parse(String pattern, ParseContext context) {
 		return null;
 	}
 
-	public boolean canParse(ParseContext pc) {
+	public boolean canParse(ParseContext context) {
 		return false;
 	}
 
@@ -86,19 +85,18 @@ public abstract class SimpleType<T> extends ClassInfo<T> implements Changer<T> {
 						}
 
 						@Override
-						@Nullable
-						public T parse(String arg0, ParseContext arg1) {
-							return SimpleType.this.parse(arg0, arg1);
+						public T parse(String pattern, ParseContext context) {
+							return SimpleType.this.parse(pattern, context);
 						}
 
 						@Override
-						public String toString(T arg0, int arg1) {
-							return SimpleType.this.toString(arg0, arg1);
+						public String toString(T type, int flags) {
+							return SimpleType.this.toString(type, flags);
 						}
 
 						@Override
-						public String toVariableNameString(T arg0) {
-							return SimpleType.this.toVariableNameString(arg0);
+						public String toVariableNameString(T type) {
+							return SimpleType.this.toVariableNameString(type);
 						}
 					}));
 		} catch (Exception e) {
